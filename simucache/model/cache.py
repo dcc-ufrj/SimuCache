@@ -24,6 +24,7 @@ class Cache(object):
         if self.strategy == 'FIFO': self._fifo()
         elif self.strategy == 'RAND': self._rand()
         elif self.strategy == 'LRU': self._lru()
+        elif self.strategy == 'LFU': self._lfu()
         else: self._error()
     
     def _error(self):
@@ -49,9 +50,21 @@ class Cache(object):
                     target = i
             if not not target: # if target exists
                 self.files.remove(target)
-    
+
+    def _lfu(self):
+        if not not self.files:
+            max_f_usage = -1
+            target = None
+            for i in self.files:
+                if (i.freq_used > max_f_usage):
+                    max_f_usage = i.freq_used;
+                    target = i
+            if not not target: # if target exists
+                self.files.remove(target)
+                    
     def append_item(self,item):
         item.usage = 0
+        item.freq_used = item.freq_used + 1
         if not not self.files:
             for element in self.files:
                 if element.name == item.name:

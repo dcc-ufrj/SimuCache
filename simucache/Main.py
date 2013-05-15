@@ -22,8 +22,8 @@ if __name__ == '__main__':
                     type=int, nargs='*')
     parser.add_argument("-d", "--decrease_epsilon", help="number of the files that need epsilon decreased. Only work with pair --number_of_files",
                     type=int, nargs='*')
-    parser.add_argument("-c", "--cache_strategy", help="type of cache used. It could be: FIFO, RAND or LRU",
-                    type=str, choices=['FIFO', 'RAND', 'LRU'], required=True)
+    parser.add_argument("-c", "--cache_strategy", help="type of cache used. It could be: FIFO, RAND, LRU or LFU",
+                    type=str, choices=['FIFO', 'RAND', 'LRU', 'LFU'], required=True)
     parser.add_argument("-cs", "--cache_size", help="size of the cache in integer",
                     type=int, required=True)
     parser.add_argument("-n", "--number_of_files", help="number of simulation files",

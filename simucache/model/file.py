@@ -18,3 +18,4 @@ class File(object):
         self.name = name
         self.frequency = frequency
         self.usage = 0
+        self.freq_used = 0
