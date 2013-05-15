@@ -11,9 +11,10 @@ class File(object):
     '''
 
 
-    def __init__(self,frequency=0):
+    def __init__(self,name,frequency=0):
         '''
         Here set cache access frequency 0 to 1 and usage of file that increase with timeslot
         '''
+        self.name = name
         self.frequency = frequency
         self.usage = 0

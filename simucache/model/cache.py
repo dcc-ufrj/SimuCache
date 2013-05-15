@@ -12,18 +12,19 @@ class Cache(object):
     '''
 
 
-    def __init__(self,strategy='FIFO',files=None):
+    def __init__(self,size,strategy='FIFO',files=list()):
         '''
         List with files and there frequencies. Therefore, a strategy
         '''
         self.files = files
         self.strategy = strategy
+        self.size = size
     
     def run_strategy(self):
-        {'FIFO': self._fifo(),
-         'RAND': self._rand(),
-         'LRU': self._lru()
-         }.get(self.strategy, self._error())()
+        if self.strategy == 'FIFO': self._fifo()
+        elif self.strategy == 'RAND': self._rand()
+        elif self.strategy == 'LRU': self._lru()
+        else: self._error()
     
     def _error(self):
         print "No Valid Strategy"
@@ -50,6 +51,12 @@ class Cache(object):
                 self.files.remove(target)
     
     def append_item(self,item):
+        if not not self.files:
+            for element in self.files:
+                if element.name == item.name:
+                    return element
+            
         if len(self.files) == self.size:
             self.run_strategy()
         self.files.insert(0, item)
+        return False
