@@ -14,4 +14,4 @@ class Result(object):
         '''
         get results params with user choices
         '''
-        
+        pass
