@@ -40,11 +40,14 @@ class Main(object):
 
         for timeslot in range(self.timeslot):
             self.go_time()
+            self.apply_epsilon()
             for hits in range(self.hits):
-                response = cache.append_item(self.select_file())
+                choice = self.select_file()
+                response = cache.append_item(choice)
                 if(response):
-                    response.usage = 0
-                    self.log.insert_log(response,timeslot+1)
+                    self.log.insert_log(response,timeslot+1,'hit',cache.get_file_status())
+                else:
+                    self.log.insert_log(choice,timeslot+1,'miss',cache.get_file_status())
 
     def gen_frequencies(self):
         if not self.list_of_frequencies and self.frequency == 'PERSONAL':
@@ -72,7 +75,9 @@ class Main(object):
             item = choice(helper_list)
             acum = item.frequency + acum
             helper_list.remove(item)
-        return item
+        for file_ in self.file_list:
+            if file_.name == item.name:
+                return file_
     
     def go_time(self):
         
@@ -80,29 +85,76 @@ class Main(object):
             file_.usage = file_.usage + 1
     
     def apply_epsilon(self):
-        if len(self.epsilon) > 1:
-            for i in range(len(self.file_list)):
-                self.file_list[i].frequency_ = self.file_list[i].frequency_ + self.epsilon[i]
+        if not not self.epsilon:
+            if len(self.epsilon) > 1:
+                if self.is_not_negative_list():
+                    for i in range(len(self.file_list)):
+                        self.file_list[i].frequency = self.file_list[i].frequency + self.epsilon[i]
                 
-        elif not not self.increase_epsilon and not not self.decrease_epsilon:
-            for file_ in self.file_list:
-                if file_.name in self.increase_epsilon:
-                    file_.frequency_ = file_.frequency_ + self.epsilon[0]
-                else:
-                    file_.frequency_ = file_.frequency_ - self.epsilon[0]
+            elif not not self.increase_epsilon and not not self.decrease_epsilon:
+                if self.is_not_negative_increase():
+                    for file_ in self.file_list:
+                        if file_.name in self.increase_epsilon:
+                            file_.frequency = file_.frequency + self.epsilon[0]
+                        else:
+                            file_.frequency = file_.frequency - self.epsilon[0]
         
-        else:
-            length = len(self.file_list)
-            if length % 2 == 0:
-                for file_ in self.file_list[:length/2]:
-                    file_.frequency_ = file_.frequency_ - self.epsilon[0]
-                for file_ in self.file_list[length/2:]:
-                    file_.frequency_ = file_.frequency_ + self.epsilon[0]
             else:
-                majority = int(length / 2) + 1
-                minority = majority - 1
-                divided = (self.epsilon[0]*minority)/majority
-                for file_ in self.file_list[:majority]:
-                    file_.frequency_ = file_.frequency_ - divided
-                for file_ in self.file_list[majority:]:
-                    file_.frequency_ = file_.frequency_ + self.epsilon[0]               
+                length = len(self.file_list)
+                if length % 2 == 0:
+                    if self.is_not_negative_dual(self.epsilon[0],self.epsilon[0],length/2):
+                        for file_ in self.file_list[:length/2]:
+                            file_.frequency = file_.frequency - self.epsilon[0]
+                        for file_ in self.file_list[length/2:]:
+                            file_.frequency = file_.frequency + self.epsilon[0]
+                else:
+                    majority = int(length / 2) + 1
+                    minority = majority - 1
+                    divided = (self.epsilon[0]*minority)/majority
+                    if self.is_not_negative_dual(divided,self.epsilon[0],majority):
+                        for file_ in self.file_list[:majority]:
+                            file_.frequency = file_.frequency - divided
+                        for file_ in self.file_list[majority:]:
+                            file_.frequency = file_.frequency + self.epsilon[0]
+
+    def is_not_negative_list(self):
+        counter = 0
+        for i in range(len(self.file_list)):
+            counter = counter + self.file_list[i].frequency  + self.epsilon[i]
+            if self.file_list[i].frequency + self.epsilon[i] < 0:
+                return False
+        if counter == 1:
+            return True
+        else:
+            return False
+    
+    def is_not_negative_dual(self,minus,max_,cut):
+        counter = 0
+        for file_ in self.file_list[:cut]:
+            counter = counter + file_.frequency - minus
+            if file_.frequency - minus < 0:
+                return False
+        for file_ in self.file_list[cut:]:
+            counter = counter + file_.frequency + max_
+            if file_.frequency + max_ < 0:
+                return False
+        if counter == 1:
+            return True
+        else:
+            return False
+                                
+    def is_not_negative_increase(self):
+        counter = 0
+        for file_ in self.file_list:
+            if file_.name in self.increase_epsilon:
+                counter = counter + file_.frequency + self.epsilon[0]
+                if file_.frequency + self.epsilon[0] < 0:
+                    return False
+            else:
+                counter = counter + file_.frequency - self.epsilon[0]
+                if file_.frequency - self.epsilon[0] < 0:
+                    return False
+        if counter == 1:
+            return True
+        else:
+            return False

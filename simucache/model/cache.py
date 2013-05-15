@@ -31,16 +31,16 @@ class Cache(object):
         sys.exit()
 
     def _fifo(self):
-        if not self.files:
-            self.list.pop()
+        if not not self.files:
+            self.files.pop()
     
     def _rand(self):
-        if not self.files:
+        if not not self.files:
             max_ = len(self.files)-1
             del self.files[randint(0,max_)]
     
     def _lru(self):
-        if not self.files:
+        if not not self.files:
             max_usage = -1
             target = None
             for i in self.files:
@@ -51,6 +51,7 @@ class Cache(object):
                 self.files.remove(target)
     
     def append_item(self,item):
+        item.usage = 0
         if not not self.files:
             for element in self.files:
                 if element.name == item.name:
@@ -58,5 +59,15 @@ class Cache(object):
             
         if len(self.files) == self.size:
             self.run_strategy()
-        self.files.insert(0, item)
+            self.files.insert(0, item)
+        
+        else:
+            self.files.insert(0, item)
         return False
+    
+    def get_file_status(self):
+        status = ''
+        if not not self.files:
+            for element in self.files:
+                status = status +"/"+ str(element.name)+"|"+str(element.frequency)+"|"+str(element.usage)
+        return status
