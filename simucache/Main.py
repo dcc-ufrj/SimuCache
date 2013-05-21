@@ -3,7 +3,8 @@ Created on 11/10/2012
 
 @author: diogo
 '''
-
+#TODO fazer graficos
+#TODO comentar todo codigo
 from controller import main, result
 import argparse
 
@@ -15,7 +16,7 @@ if __name__ == '__main__':
                     action="store_true")
     parser.add_argument("-f", "--frequency",
                     help="type of frequency used. For the last use --list_of_frequencies too.",
-                    type=str, choices=['RANDOM', 'UNIFORM', 'PERSONAL'])
+                    type=str, choices=['RANDOM', 'UNIFORM', 'ZIPF', 'PERSONAL'])
     parser.add_argument("-e", "--epsilon", help="value of epsilon used to change frequencies. Could be a list with positive and negative values",
                     type=float, nargs='*')
     parser.add_argument("-i", "--increase_epsilon", help="number of the files that need epsilon increased. Only work with pair --number_of_files",
@@ -32,6 +33,8 @@ if __name__ == '__main__':
                     type=int, required=True)
     parser.add_argument("-hi", "--hits", help="number of hits tries for each timeslot",
                     type=int, required=True)
+    parser.add_argument("-z", "--zipf_exponent", help="ZIPF exponential value. Value > 0",
+                    type=int)
     parser.add_argument("-l", "--list_of_frequencies", help="set individual frequencies for files and the values must sum 1. Don't work with --increase_epsilon and --decrease_epsilon",
                     type=float, nargs='*')
     arg = parser.parse_args()

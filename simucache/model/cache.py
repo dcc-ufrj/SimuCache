@@ -79,8 +79,11 @@ class Cache(object):
         return False
     
     def get_file_status(self):
-        status = ''
+        status = list()
         if not not self.files:
             for element in self.files:
-                status = status +"/"+ str(element.name)+"|"+str(element.frequency)+"|"+str(element.usage)
+                status.append({'name':str(element.name),
+                               'frequency':str(element.frequency),
+                               "usage":str(element.usage),
+                               "usage_frequency":str(element.freq_used)})
         return status

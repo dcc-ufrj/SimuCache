@@ -11,17 +11,19 @@ class Frequency(object):
     '''
 
 
-    def __init__(self,number_files,frequency_type='RANDOM',frequency=list()):
+    def __init__(self,number_files,frequency_type='RANDOM',z=0,frequency=list()):
         '''
         Here set cache access frequency type and number of files
         '''
         self.frequency_type = frequency_type
         self.number = number_files
         self.frequency_ = frequency
+        self.z = z
     
     def gen_frequency(self):
         if self.frequency_type == 'RANDOM': self._random()
         elif self.frequency_type == 'UNIFORM': self._uniform()
+        elif self.frequency_type == 'ZIPF' and self.z > 0: self._zipf()
         elif self.frequency_type == 'PERSONAL': self._personal()
         else: self._error()
     
@@ -43,7 +45,15 @@ class Frequency(object):
         frequency = float(1)/float(self.number)
         for i in range(self.number):
             self.frequency_.append(frequency)
-    
+            
+    def _zipf(self):
+        sum_ = 0;
+        for j in range(self.number):
+            sum_ += 1.0/((j+1)**self.z)
+        for i in range(self.number):
+            frequency = ((1.0/(i+1))**self.z)/sum_
+            self.frequency_.append(frequency)
+        
     def _personal(self):
         if len(self.frequency_) != self.number:
             self._error()

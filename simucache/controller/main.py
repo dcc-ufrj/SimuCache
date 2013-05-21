@@ -32,6 +32,7 @@ class Main(object):
         self.log = Log(params)
         self.increase_epsilon = params.increase_epsilon
         self.decrease_epsilon = params.decrease_epsilon
+        self.z = params.zipf_exponent
         
     def run(self):
         cache = Cache(self.size,self.strategy)
@@ -48,6 +49,7 @@ class Main(object):
                     self.log.insert_log(response,timeslot+1,'hit',cache.get_file_status())
                 else:
                     self.log.insert_log(choice,timeslot+1,'miss',cache.get_file_status())
+        self.log.end_write()
 
     def gen_frequencies(self):
         if not self.list_of_frequencies and self.frequency == 'PERSONAL':
@@ -56,9 +58,9 @@ class Main(object):
             print "You need to set preference to PERSONAL"
         else:
             if not self.list_of_frequencies:
-                freq = Frequency(self.number,self.frequency)
+                freq = Frequency(self.number,self.frequency,self.z)
             else:
-                freq = Frequency(self.number,self.frequency,self.list_of_frequencies)
+                freq = Frequency(self.number,self.frequency,self.z,self.list_of_frequencies)
             freq.gen_frequency()
             self.list_of_frequencies = freq.frequency_
             
